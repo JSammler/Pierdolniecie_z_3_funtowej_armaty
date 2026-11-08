@@ -1,6 +1,8 @@
+#include <exception>
+#include <iostream>
 #include <numbers>
 
-#include "physics/Simulation.hpp"
+#include "gui/App.hpp"
 #include "physics/SimulationConfig.hpp"
 
 int main()
@@ -9,9 +11,16 @@ int main()
 
     config.angle_rad = 30 * std::numbers::pi / 180;
 
-    Simulation simulation(config);
-
-    simulation.Run();
+    try
+    {
+        gui::App app(config);
+        return app.run();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Blad: " << e.what() << '\n';
+        return 1;
+    }
 
     // Dostępne po wykonaniu symulacji
     // getResult zwraca StepsStack ze wszystkimi stanami kuli w locie
