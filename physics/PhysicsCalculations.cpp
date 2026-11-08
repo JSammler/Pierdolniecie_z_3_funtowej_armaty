@@ -20,7 +20,7 @@ Vec2 initialVelocity(const SimulationConfig& config)
 
 Vec2 force(const SimulationConfig& config, const ProjectileState& state)
 {
-    return {0.0, -config.gravity / config.mass_kg};
+    return {0.0, -config.gravity};
 }
 Vec2 acceleration(const SimulationConfig& config, const ProjectileState& state)
 {
