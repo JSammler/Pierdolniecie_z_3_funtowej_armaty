@@ -1,77 +1,60 @@
-#pragma once
 #include <stdexcept>
 
+#include "Simulation.hpp"
 #include "PhysicsCalculations.hpp"
 #include "ProjectileState.hpp"
 #include "SimulationConfig.hpp"
 #include "Validation.hpp"
 
-struct StepsStack
+void Simulation::AddStep(const ProjectileState& state_)
 {
-    ProjectileState state;
-    StepsStack* next = nullptr;
-};
+    auto newStack = new StepsStack{state_};
 
-class Simulation
+    tail->next = newStack;
+    tail = newStack;
+    count++;
+}
+
+Simulation::Simulation()
 {
-    StepsStack stack{};
-    int count{1};
-    SimulationConfig config;
-    StepsStack* tail = &stack;
+    config = SimulationConfig();
+    stack.state = initialState(config);
+}
+Simulation::Simulation(SimulationConfig config_)
+{
+    auto validation = Validation_Config(config_);
+    if (!validation) throw std::runtime_error(validation.errorMessage);
 
-    bool SimulationFinished{false};
+    config = config_;
+    stack.state = initialState(config);
+}
 
-    void AddStep(const ProjectileState& state_)
+ValidationResult Simulation::Run()
+{
+    if (SimulationFinished) throw std::runtime_error("Simulation has already been run");
+
+    ProjectileState currentStep = stack.state;
+    ValidationResult validation_result;
+    SimulationFinished = true;
+    for (double time = 0; time <= config.maxTime_s; time += config.timeStep_s)
     {
-        auto newStack = new StepsStack{state_};
+        currentStep = eurelStep(config, currentStep);
+        AddStep(currentStep);
 
-        tail->next = newStack;
-        tail = newStack;
-        count++;
+        validation_result = Validation_NextStep(currentStep, config);
+        if (!validation_result) return {true, validation_result.errorMessage};
     }
+    return {false, "Projectile exceeded maximum time in air"};
+}
 
-public:
-    Simulation()
-    {
-        config = SimulationConfig();
-        stack.state = initialState(config);
-    }
-    Simulation(SimulationConfig config_)
-    {
-        auto validation = Validation_Config(config_);
-        if (!validation) throw std::runtime_error(validation.errorMessage);
+StepsStack Simulation::getResult() const
+{
+    if (!SimulationFinished) throw std::runtime_error("Simulation has not yet been ran");
+    return stack;
+}
 
-        config = config_;
-        stack.state = initialState(config);
-    }
-
-    ValidationResult Run()
-    {
-        if (SimulationFinished) throw std::runtime_error("Simulation has already been run");
-
-        ProjectileState currentStep = stack.state;
-        ValidationResult validation_result;
-        SimulationFinished = true;
-        for (double time = 0; time <= config.maxTime_s; time += config.timeStep_s)
-        {
-            currentStep = eurelStep(config, currentStep);
-            AddStep(currentStep);
-
-            validation_result = Validation_NextStep(currentStep, config);
-            if (!validation_result) return {true, validation_result.errorMessage};
-        }
-        return {false, "Projectile exceeded maximum time in air"};
-    }
-
-    StepsStack getResult() const
-    {
-        if (!SimulationFinished) throw std::runtime_error("Simulation has not yet been ran");
-        return stack;
-    }
-
-    int getCount() const
-    {
-        if (!SimulationFinished) throw std::runtime_error("Simulation has not yet been ran");
-        return count;
-    }
-};
+int Simulation::getCount() const
+{
+    if (!SimulationFinished) throw std::runtime_error("Simulation has not yet been ran");
+    return count;
+}
