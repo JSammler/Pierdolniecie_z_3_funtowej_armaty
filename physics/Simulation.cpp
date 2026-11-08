@@ -28,6 +28,16 @@ Simulation::Simulation(SimulationConfig config_)
     config = config_;
     stack.state = initialState(config);
 }
+Simulation::~Simulation()
+{
+    auto current = stack.next;
+    while (current)
+    {
+        auto next = current->next;
+        delete current;
+        current = next;
+    }
+}
 
 ValidationResult Simulation::Run()
 {
