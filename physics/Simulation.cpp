@@ -68,4 +68,10 @@ public:
         if (!SimulationFinished) throw std::runtime_error("Simulation has not yet been ran");
         return stack;
     }
+
+    int getCount() const
+    {
+        if (!SimulationFinished) throw std::runtime_error("Simulation has not yet been ran");
+        return count;
+    }
 };
