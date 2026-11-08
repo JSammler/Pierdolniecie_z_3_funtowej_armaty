@@ -24,6 +24,10 @@ class Simulation
 public:
     Simulation();
     Simulation(SimulationConfig config_);
+    ~Simulation();
+
+    Simulation(const Simulation&) = delete;
+    Simulation& operator=(const Simulation&) = delete;
 
     ValidationResult Run();
 
