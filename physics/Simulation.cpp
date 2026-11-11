@@ -44,16 +44,25 @@ ValidationResult Simulation::Run()
     if (SimulationFinished) throw std::runtime_error("Simulation has already been run");
 
     ProjectileState currentStep = stack.state;
+    ProjectileState nextStep;
     ValidationResult validation_result;
     SimulationFinished = true;
 
+    unsigned int stepIndex = 0;
     while (currentStep.time < config.maxTime_s)
     {
-        currentStep = eulerStep(config, currentStep);
-        AddStep(currentStep);
+        nextStep = eulerStep(config, currentStep);
+        // w systemie dwójkowym 0.001 nie da się zapisać wymiernie więc kroki zapisujemy jako int i mnożymy przez krok aby zachować doładność
+        nextStep.time = static_cast<double>(++stepIndex) * config.timeStep_s;
+        AddStep(nextStep);
 
-        validation_result = Validation_NextStep(currentStep, config);
-        if (!validation_result) return {true, validation_result.errorMessage};
+        validation_result = Validation_NextStep(nextStep, config);
+        if (!validation_result)
+        {
+            tail->state = lastStepCorrection(currentStep, nextStep);
+            return {true, validation_result.errorMessage};
+        }
+        currentStep = nextStep;
     }
     return {false, "Projectile exceeded maximum time in air"};
 }
