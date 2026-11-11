@@ -41,9 +41,22 @@ ProjectileState eulerStep(const SimulationConfig& config, const ProjectileState&
 {
     const double dTime = config.timeStep_s;
     ProjectileState result;
-    result.time = state.time + dTime;
-    result.position = state.position + state.velocity * dTime;
+    result.time = state.time + dTime; // zbędne przy korzystaniu z Simulation::Run() ale dla spójności zostawione
+    result.position = state.position + state.velocity * dTime + state.acceleration * (0.5 * dTime * dTime);
     result.velocity = state.velocity + state.acceleration * dTime;
     result.acceleration = acceleration(config, result);
+    return result;
+}
+
+ProjectileState lastStepCorrection(const ProjectileState& stateA, const ProjectileState& stateB)
+{
+    const double f = stateA.position.y / (stateA.position.y - stateB.position.y);
+
+    ProjectileState result;
+    result.time = stateA.time + f * (stateB.time - stateA.time);
+    result.position = { stateA.position.x + f * (stateB.position.x - stateA.position.x), 0.0 };
+    result.velocity = stateA.velocity + (stateB.velocity - stateA.velocity) * f;
+    result.acceleration = stateB.acceleration;
+
     return result;
 }
