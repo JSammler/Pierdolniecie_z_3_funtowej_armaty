@@ -11,4 +11,4 @@ Vec2 force(const SimulationConfig& config, const ProjectileState& state);
 Vec2 acceleration(const SimulationConfig& config, const ProjectileState& state);
 
 ProjectileState initialState(const SimulationConfig& config);
-ProjectileState eurelStep(const SimulationConfig& config, const ProjectileState& state);
+ProjectileState eulerStep(const SimulationConfig& config, const ProjectileState& state);
