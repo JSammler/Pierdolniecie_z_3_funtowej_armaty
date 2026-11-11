@@ -46,9 +46,10 @@ ValidationResult Simulation::Run()
     ProjectileState currentStep = stack.state;
     ValidationResult validation_result;
     SimulationFinished = true;
-    for (double time = 0; time <= config.maxTime_s; time += config.timeStep_s)
+
+    while (currentStep.time < config.maxTime_s)
     {
-        currentStep = eurelStep(config, currentStep);
+        currentStep = eulerStep(config, currentStep);
         AddStep(currentStep);
 
         validation_result = Validation_NextStep(currentStep, config);

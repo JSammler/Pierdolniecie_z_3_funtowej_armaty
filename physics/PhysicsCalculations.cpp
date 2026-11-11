@@ -20,7 +20,7 @@ Vec2 initialVelocity(const SimulationConfig& config)
 
 Vec2 force(const SimulationConfig& config, const ProjectileState& state)
 {
-    return {0.0, -config.gravity};
+    return {0.0, -config.gravity * config.mass_kg};
 }
 Vec2 acceleration(const SimulationConfig& config, const ProjectileState& state)
 {
@@ -37,7 +37,7 @@ ProjectileState initialState(const SimulationConfig& config)
     return result;
 }
 
-ProjectileState eurelStep(const SimulationConfig& config, const ProjectileState& state)
+ProjectileState eulerStep(const SimulationConfig& config, const ProjectileState& state)
 {
     const double dTime = config.timeStep_s;
     ProjectileState result;
