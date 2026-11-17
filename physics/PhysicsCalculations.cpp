@@ -1,4 +1,3 @@
-#include <numbers>
 #include <cmath>
 
 #include "PhysicsCalculations.hpp"

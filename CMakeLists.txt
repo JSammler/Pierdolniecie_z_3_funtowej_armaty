@@ -17,6 +17,8 @@ add_executable(Pierdolniecie_z_3_funtowej_armaty
         physics/Validation.cpp
         physics/Validation.hpp
         physics/Vec2.hpp
-        main.cpp)
+        main.cpp
+        physics/SaveResults.hpp
+        physics/SaveResults.cpp)
 
 target_link_libraries(Pierdolniecie_z_3_funtowej_armaty PRIVATE gui)

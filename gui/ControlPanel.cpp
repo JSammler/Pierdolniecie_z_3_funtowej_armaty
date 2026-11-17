@@ -43,7 +43,7 @@ PanelAction ControlPanel::draw(const StatusMessage& status, const TrajectoryStat
     inputDouble("Siła [N]", &config.force_N, 100.0, "%.1f");
     inputDouble("Czas impulsu [s]", &config.impulseTime_s, 0.001, "%.4f");
     inputDouble("Masa kuli [kg]", &config.mass_kg, 0.1, "%.2f");
-    constexpr double angleMin = 0.0, angleMax = 89.9;
+    constexpr double angleMin = 0.1, angleMax = 89.9;
     ImGui::SliderScalar("Kąt [°]", ImGuiDataType_Double, &angle_deg, &angleMin, &angleMax, "%.1f");
     inputDouble("Lufa x [m]", &config.muzzle.x, 1.0, "%.2f");
     inputDouble("Lufa y [m]", &config.muzzle.y, 1.0, "%.2f");
